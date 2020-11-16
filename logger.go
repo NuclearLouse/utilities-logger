@@ -110,3 +110,16 @@ func envConfig() *Config {
 		ShowFullLevel: env.GetEnvAsBool("LOG_FULL_LVL", false),
 	}
 }
+
+// DefaultConfig ...
+func DefaultConfig() *Config {
+	return &Config{
+		Level:      "trace",
+		MaxSize:    1,
+		MaxBackup:  3,
+		MaxAge:     1,
+		Compress:   true,
+		Localtime:  true,
+		FormatTime: "2006-01-02 15:04:05.000",
+	}
+}
