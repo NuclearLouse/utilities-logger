@@ -1,0 +1,18 @@
+# github.com/NuclearLouse/utilities-environ v0.0.0-20201116150547-73685ad3935f
+## explicit
+github.com/NuclearLouse/utilities-environ
+# github.com/antonfisher/nested-logrus-formatter v1.3.0
+## explicit
+github.com/antonfisher/nested-logrus-formatter
+# github.com/orandin/lumberjackrus v1.0.1
+## explicit
+github.com/orandin/lumberjackrus
+# github.com/sirupsen/logrus v1.7.0
+## explicit
+github.com/sirupsen/logrus
+# golang.org/x/sys v0.0.0-20191026070338-33540a1f6037
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# gopkg.in/natefinch/lumberjack.v2 v2.0.0
+## explicit
+gopkg.in/natefinch/lumberjack.v2
