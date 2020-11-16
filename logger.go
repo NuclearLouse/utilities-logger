@@ -27,9 +27,12 @@ type Config struct {
 // New ...
 func New(config ...*Config) (*logrus.Logger, error) {
 
-	cfg := config[0]
+	var cfg *Config
+
 	if config == nil {
 		cfg = envConfig()
+	} else {
+		cfg = config[0]
 	}
 
 	log := logrus.New()
@@ -44,34 +47,38 @@ func New(config ...*Config) (*logrus.Logger, error) {
 	format := &nested.Formatter{
 		TimestampFormat: cfg.FormatTime,
 		ShowFullLevel:   cfg.ShowFullLevel,
-		NoColors:        true,
+		// NoColors:        true,
 	}
 	log.SetFormatter(format)
 
-	if cfg.ErrFile == "" {
-		file, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
-		if err != nil {
-			return log, err
+	if cfg.LogFile != "" {
+		format.NoColors = true
+		log.SetFormatter(format)
+		if cfg.ErrFile == "" {
+			file, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0777)
+			if err != nil {
+				return log, err
+			}
+			log.SetOutput(io.MultiWriter(file, os.Stdout))
+
+		} else {
+			hook, err := lumberjackrus.NewHook(
+				hookFile(cfg, cfg.LogFile),
+				logrus.DebugLevel,
+				format,
+				&lumberjackrus.LogFileOpts{
+					logrus.WarnLevel:  hookFile(cfg, cfg.ErrFile),
+					logrus.ErrorLevel: hookFile(cfg, cfg.ErrFile),
+					logrus.FatalLevel: hookFile(cfg, cfg.ErrFile),
+				},
+			)
+
+			if err != nil {
+				return nil, err
+			}
+
+			log.AddHook(hook)
 		}
-		log.SetOutput(io.MultiWriter(file, os.Stdout))
-
-	} else {
-		hook, err := lumberjackrus.NewHook(
-			hookFile(cfg, cfg.LogFile),
-			logrus.DebugLevel,
-			format,
-			&lumberjackrus.LogFileOpts{
-				logrus.WarnLevel:  hookFile(cfg, cfg.ErrFile),
-				logrus.ErrorLevel: hookFile(cfg, cfg.ErrFile),
-				logrus.FatalLevel: hookFile(cfg, cfg.ErrFile),
-			},
-		)
-
-		if err != nil {
-			return nil, err
-		}
-
-		log.AddHook(hook)
 	}
 
 	return log, nil
@@ -92,7 +99,7 @@ func envConfig() *Config {
 
 	return &Config{
 		Level:         env.GetEnv("LOG_LVL", "trace"),
-		LogFile:       env.GetEnv("LOG_FILE", "agent-bit-control.log"),
+		LogFile:       env.GetEnv("LOG_FILE", ""),
 		ErrFile:       env.GetEnv("LOG_ERR_FILE", ""),
 		MaxSize:       env.GetEnvAsInt("LOG_MAX_SIZE", 1),
 		MaxBackup:     env.GetEnvAsInt("LOG_MAX_BACKUP", 3),
