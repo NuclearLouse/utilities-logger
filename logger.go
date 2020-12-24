@@ -24,7 +24,8 @@ type Config struct {
 	ShowFullLevel bool
 }
 
-// New ...
+// New ...функция возвращающая указатель на структуру Logger. Если не передан укзатель на Config, 
+// настройки будут читаться из переменных окружения.
 func New(config ...*Config) (*logrus.Logger, error) {
 
 	var cfg *Config
