@@ -13,18 +13,18 @@ import (
 // Config ...
 type Config struct {
 	Level         string
-	LogFile       string
-	ErrFile       string
+	LogFile       string `ini:filepath`
+	ErrFile       string `ini:error_file`
 	MaxSize       int
 	MaxBackup     int
 	MaxAge        int
 	Compress      bool
 	Localtime     bool
 	FormatTime    string
-	ShowFullLevel bool
+	ShowFullLevel bool `ini:show_full_lvl`
 }
 
-// New ...функция возвращающая указатель на структуру Logger. Если не передан укзатель на Config, 
+// New ...функция возвращающая указатель на структуру Logger. Если не передан укзатель на Config,
 // настройки будут читаться из переменных окружения.
 func New(config ...*Config) (*logrus.Logger, error) {
 
